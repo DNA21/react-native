@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { View, Button, StyleSheet } from 'react-native';
-import { Checkbox, Input } from 'react-native-elements';
+import { CheckBox, Input } from 'react-native-elements';
 import * as SecureStore from 'expo-secure-store';
 
 const LoginScreen = () => {
@@ -9,9 +9,9 @@ const LoginScreen = () => {
     const [remember, setRemember] = useState(false);
 
     const handleLogin = () => {
-        console.log('username: ', username);
-        console.log('password: ', password);
-        console.log('remember: ', remember);
+        console.log('username:', username);
+        console.log('password:', password);
+        console.log('remember:', remember);
         if (remember) {
             SecureStore.setItemAsync(
                 'userinfo',
@@ -23,7 +23,7 @@ const LoginScreen = () => {
         } else {
             SecureStore.deleteItemAsync('userinfo').catch((error) =>
                 console.log('Could not delete user info', error)
-            )
+            );
         }
     };
 
@@ -35,7 +35,7 @@ const LoginScreen = () => {
                 setPassword(userinfo.password);
                 setRemember(true);
             }
-        })
+        });
     }, []);
 
     return (
@@ -56,8 +56,8 @@ const LoginScreen = () => {
                 containerStyle={styles.formInput}
                 leftIconContainerStyle={styles.formIcon}
             />
-            <Checkbox
-                title="Remember Me"
+            <CheckBox
+                title='Remember Me'
                 center
                 checked={remember}
                 onPress={() => setRemember(!remember)}
@@ -71,7 +71,7 @@ const LoginScreen = () => {
                 />
             </View>
         </View>
-    )
+    );
 };
 
 const styles = StyleSheet.create({
@@ -92,6 +92,6 @@ const styles = StyleSheet.create({
     formButton: {
         margin: 40
     }
-})
+});
 
 export default LoginScreen;
