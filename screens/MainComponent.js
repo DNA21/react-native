@@ -22,6 +22,7 @@ import {
 } from "@react-navigation/drawer";
 import { Icon } from "react-native-elements";
 import logo from '../assets/images/logo.png';
+import { getFocusedRouteNameFromRoute } from "@react-navigation/core";
 
 const Drawer = createDrawerNavigator();
 
@@ -186,10 +187,16 @@ const LoginNavigator = () => {
             <Stack.Screen
                 name='Login'
                 component={LoginScreen}
-                options={({ navigation }) => ({
+                options={({ navigation, route }) => ({
+                    headerTitle: getFocusedRouteNameFromRoute(route),
                     headerLeft: () => (
                         <Icon
-                            name='sign-in'
+                            name={
+                                getFocusedRouteNameFromRoute(route) ===
+                                'Register'
+                                    ? 'user-plus'
+                                    : 'sign-in'
+                            }
                             type='font-awesome'
                             iconStyle={styles.stackIcon}
                             onPress={() => navigation.toggleDrawer()}
