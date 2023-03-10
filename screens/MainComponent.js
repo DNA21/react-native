@@ -1,6 +1,14 @@
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
-import { Image, Text, Platform, StyleSheet, View } from "react-native";
+import {
+    Image,
+    Text,
+    Platform,
+    StyleSheet,
+    View,
+    Alert,
+    ToastAndroid
+} from "react-native";
 import Constants from "expo-constants";
 import CampsiteInfoScreen from "./CampsiteInfoScreen";
 import DirectoryScreen from "./DirectoryScreen";
@@ -23,6 +31,7 @@ import {
 import { Icon } from "react-native-elements";
 import logo from '../assets/images/logo.png';
 import { getFocusedRouteNameFromRoute } from "@react-navigation/core";
+import NetInfo from '@react-native-community/netinfo';
 
 const Drawer = createDrawerNavigator();
 
@@ -193,7 +202,7 @@ const LoginNavigator = () => {
                         <Icon
                             name={
                                 getFocusedRouteNameFromRoute(route) ===
-                                'Register'
+                                    'Register'
                                     ? 'user-plus'
                                     : 'sign-in'
                             }
@@ -231,6 +240,48 @@ const Main = () => {
         dispatch(fetchPartners());
         dispatch(fetchComments());
     }, [dispatch]);
+
+    useEffect(() => {
+        NetInfo.fetch().then((connectionInfo) => {
+            Platform.OS =='ios'
+                ? Alert.alert('Initial Network Connectivity Type: ', connectionInfo.type)
+                : ToastAndroid.show(
+                    'Initial Network Connectivity Type: ' +
+                        connectionInfo.type,
+                    ToastAndroid.LONG
+                )
+        });
+
+        const unsubscribeNetInfo = NetInfo.addEventListener(
+            (connectionInfo) => {
+                handleConnectivityChange(connectionInfo);
+            }
+        )
+
+        return unsubscribeNetInfo;
+    }, []);
+
+    const handleConnectivityChange = (connectionInfo) => {
+        let connectionMsg = "You are now connected to an active network.";
+        switch (connectionInfo.type) {
+            case 'none':
+                connectionMsg = "No network connection is active.";
+                break;
+            case 'unknown':
+                connectionMsg = "The network connection state is unknown.";
+                break;
+            case 'cellular':
+                connectionMsg = "You are now connected to a cellular network."
+                break;
+            case 'wifi':
+                connectionMsg = "You are now connected to a WiFi network.";
+                break;
+        }
+        Platform.OS === 'ios'
+        ? Alert.alert('Connection change:', connectionMsg)
+        : ToastAndroid.show(connectionMsg, ToastAndroid.LONG);
+    };
+
     return (
         <View
             style={{
@@ -241,14 +292,14 @@ const Main = () => {
         >
             <Drawer.Navigator
                 initialRouteName='Home'
-                drawerContent = {CustomDrawerContent}
+                drawerContent={CustomDrawerContent}
                 drawerStyle={{ backgroundColor: '#CEC8FF' }}
             >
                 <Drawer.Screen
                     name='Login'
                     component={LoginNavigator}
                     options={{
-                        drawerIcon: ({ color}) =>(
+                        drawerIcon: ({ color }) => (
                             <Icon
                                 name='sign-in'
                                 type='font-awesome'
@@ -264,7 +315,7 @@ const Main = () => {
                     component={HomeNavigator}
                     options={{
                         title: 'Home',
-                        drawerIcon: ({ color}) =>(
+                        drawerIcon: ({ color }) => (
                             <Icon
                                 name='home'
                                 type='font-awesome'
@@ -280,7 +331,7 @@ const Main = () => {
                     component={DirectoryNavigator}
                     options={{
                         title: 'Campsite Directory',
-                        drawerIcon: ({ color}) =>(
+                        drawerIcon: ({ color }) => (
                             <Icon
                                 name='list'
                                 type='font-awesome'
@@ -296,7 +347,7 @@ const Main = () => {
                     component={ReservationNavigator}
                     options={{
                         title: 'Reserve Campsite',
-                        drawerIcon: ({ color}) =>(
+                        drawerIcon: ({ color }) => (
                             <Icon
                                 name='tree'
                                 type='font-awesome'
@@ -312,7 +363,7 @@ const Main = () => {
                     component={FavoritesNavigator}
                     options={{
                         title: 'My Favorites',
-                        drawerIcon: ({ color}) =>(
+                        drawerIcon: ({ color }) => (
                             <Icon
                                 name='heart'
                                 type='font-awesome'
@@ -328,7 +379,7 @@ const Main = () => {
                     component={AboutNavigator}
                     options={{
                         title: 'About',
-                        drawerIcon: ({ color}) =>(
+                        drawerIcon: ({ color }) => (
                             <Icon
                                 name='info-circle'
                                 type='font-awesome'
@@ -344,7 +395,7 @@ const Main = () => {
                     component={ContactNavigator}
                     options={{
                         title: 'Contact Us',
-                        drawerIcon: ({ color}) =>(
+                        drawerIcon: ({ color }) => (
                             <Icon
                                 name='address-card'
                                 type='font-awesome'
